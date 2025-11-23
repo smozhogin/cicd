@@ -1,0 +1,6 @@
+artifact_location: file:///content/APP/mlruns/551660855729650067
+creation_time: 1763913626170
+experiment_id: '551660855729650067'
+last_update_time: 1763913626170
+lifecycle_stage: active
+name: iris_xgb_gridsearch
