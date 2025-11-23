@@ -1,0 +1,59 @@
+image: python:3.12-slim
+
+stages:
+  - install
+  - train
+  - drift
+  - checks
+  - artifacts
+
+variables:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PYTHONUNBUFFERED: "1"
+
+before_script:
+  - python -m pip install --upgrade pip
+  - pip install -r requirements.txt
+
+install_dependencies:
+  stage: install
+  script:
+    - echo "Установка зависимостей завершена успешно"
+
+train_model:
+  stage: train
+  script:
+    - python APP/train_model.py
+  artifacts:
+    paths:
+      - APP/models/
+      - APP/mlruns/
+
+run_evidently:
+  stage: drift
+  script:
+    - python APP/data_drift.py
+  artifacts:
+    paths:
+      - APP/reports/evidently_iris_data_drift.html
+      - APP/reports/
+
+run_deepchecks:
+  stage: checks
+  script:
+    - python APP/deep_checks.py
+  artifacts:
+    paths:
+      - APP/reports/deepchecks_iris_train_test.html
+      - APP/reports/
+
+collect_artifacts:
+  stage: artifacts
+  script:
+    - echo "Сбор финальных артефактов"
+  artifacts:
+    name: "cicd-artifacts"
+    paths:
+      - APP/models/
+      - APP/mlruns/
+      - APP/reports/
